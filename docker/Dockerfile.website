@@ -10,7 +10,7 @@ COPY ./website/package*.json ./
 RUN npm ci
 
 # Rebuild the source code only when needed
-FROM node:16.19.1 AS builder
+FROM artifactory.rakuten-it.com/rit-eng-docker-dev-local/node:16.19.1 AS builder
 WORKDIR /app
 COPY ./website/ .
 
