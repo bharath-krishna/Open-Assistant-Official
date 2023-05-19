@@ -154,9 +154,9 @@ services:
 
   # The oassist web service.
   web:
-    build:
-      dockerfile: docker/Dockerfile.website
-      context: .
+    # build:
+    #   dockerfile: docker/Dockerfile.website
+    #   context: .
     image: oasst-web
     environment:
       - CLOUDFLARE_CAPTCHA_SECRET_KEY=1x0000000000000000000000000000000AA
@@ -170,7 +170,7 @@ services:
       - EMAIL_FROM=info@example.com
       - ENABLE_EMAIL_SIGNIN=true
       - ENABLE_EMAIL_SIGNIN_CAPTCHA=false
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://open-assistant-test.dgx-rit.jpw1a.dcnw.rakuten
       - DEBUG_LOGIN=true
       - INFERENCE_SERVER_HOST=http://inference-server:8000
       - ENABLE_CHAT=true
@@ -178,7 +178,7 @@ services:
       webdb:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "80:3000"
     command: bash wait-for-postgres.sh node server.js
     profiles: ["ci"]
 
