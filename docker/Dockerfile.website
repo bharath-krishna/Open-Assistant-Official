@@ -5,6 +5,12 @@
 FROM artifactory.rakuten-it.com/dockerhub/node:16.19.1 AS deps
 WORKDIR /app
 
+# Set proxy
+ENV http_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV https_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTP_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTPS_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+
 # Install dependencies based on the preferred package manager
 COPY ./website/package*.json ./
 RUN npm ci
@@ -14,6 +20,12 @@ FROM artifactory.rakuten-it.com/dockerhub/node:16.19.1 AS builder
 WORKDIR /app
 COPY ./website/ .
 
+# Set proxy
+ENV http_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV https_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTP_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTPS_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+
 # mount node_modules instead of copying them
 RUN --mount=type=bind,from=deps,source=/app/node_modules,target=/app/node_modules,readwrite \
   npx prisma generate && npm run build
@@ -21,6 +33,12 @@ RUN --mount=type=bind,from=deps,source=/app/node_modules,target=/app/node_module
 # Production image, copy all the files and run next
 FROM artifactory.rakuten-it.com/dockerhub/node:16.19.1 AS runner
 WORKDIR /app
+
+# Set proxy
+ENV http_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV https_proxy http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTP_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
+ENV HTTPS_PROXY http://cslc-lb-1.cslc-logging.jpe2b.dcnw.rakuten:9000
 
 ENV NODE_ENV production
 
