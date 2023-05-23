@@ -41,7 +41,8 @@ else
         device="${devices[$i]}"
         worker_port=$((8300 + $i))
         master_port=$((29500 + $i))
-        shard_uds_path="/tmp/text-generation-server-$i"
+        # shard_uds_path="/tmp/text-generation-server-$i"
+        shard_uds_path="/opt/text-generation-server-$i"
         echo "Starting worker server $i on port $worker_port on device $device"
         CUDA_VISIBLE_DEVICES=$device text-generation-launcher --model-id $MODEL_ID --num-shard $num_shards $quantize_args --port $worker_port --master-port $master_port --shard-uds-path $shard_uds_path &
         echo "Starting worker $i"
