@@ -47,6 +47,7 @@ RUN adduser               \
 USER ${APP_USER}
 
 RUN mkdir -p "${PROMETHEUS_MULTIPROC_DIR}"
+COPY --chown="${APP_USER}:${APP_USER}" ./inference/server ${APP_ROOT}
 
 WORKDIR ${APP_ROOT}
 

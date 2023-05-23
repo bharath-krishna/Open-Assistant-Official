@@ -13,8 +13,10 @@ WORKDIR /worker
 
 RUN conda create -n worker python=3.10 -y
 
-COPY ./oasst-shared /tmp/oasst-shared
-RUN /opt/miniconda/envs/worker/bin/pip install /tmp/oasst-shared
+COPY ./oasst-shared /opt/inference/lib/oasst-shared
+COPY ./inference/worker /opt/inference/worker
+
+RUN /opt/miniconda/envs/worker/bin/pip install /opt/inference/lib/oasst-shared
 
 COPY ./${APP_RELATIVE_PATH}/requirements.txt .
 RUN /opt/miniconda/envs/worker/bin/pip install -r requirements.txt
