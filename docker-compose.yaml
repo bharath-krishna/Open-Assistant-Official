@@ -197,12 +197,12 @@ services:
       interval: 2s
       timeout: 2s
       retries: 10
-    profiles: ["inference"]
+    profiles: ["inference", "inference-db"]
 
   inference-redis:
     image: redis
     restart: always
-    profiles: ["inference"]
+    profiles: ["inference", "inference-redis"]
     ports:
       - 6389:6379
     healthcheck:
