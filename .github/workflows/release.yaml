@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - main
+      - initial_bug_fixes
   release:
     types:
       - released
