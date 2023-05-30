@@ -9,43 +9,64 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
 import EmailProvider from "next-auth/providers/email";
 import GoogleProvider from "next-auth/providers/google";
+import KeycloakProvider from "next-auth/providers/keycloak";
 import { checkCaptcha } from "src/lib/captcha";
 import { discordAvatarRefresh } from "src/lib/discord_avatar_refresh";
 import { createApiClientFromUser } from "src/lib/oasst_client_factory";
 import prisma from "src/lib/prismadb";
 import { convertToBackendUserCore } from "src/lib/users";
+import type { Adapter } from "next-auth/adapters";
 
 const providers: Provider[] = [];
 
-// Register an email magic link auth method.
-providers.push(
-  EmailProvider({
-    server: {
-      host: process.env.EMAIL_SERVER_HOST,
-      port: process.env.EMAIL_SERVER_PORT,
-      auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD,
-      },
-    },
-    from: process.env.EMAIL_FROM,
-  })
-);
+// // Register an email magic link auth method.
+// providers.push(
+//   EmailProvider({
+//     server: {
+//       host: process.env.EMAIL_SERVER_HOST,
+//       port: process.env.EMAIL_SERVER_PORT,
+//       auth: {
+//         user: process.env.EMAIL_SERVER_USER,
+//         pass: process.env.EMAIL_SERVER_PASSWORD,
+//       },
+//     },
+//     from: process.env.EMAIL_FROM,
+//   })
+// );
 
-if (process.env.DISCORD_CLIENT_ID) {
-  providers.push(
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
-    })
-  );
-}
+// if (process.env.DISCORD_CLIENT_ID) {
+//   providers.push(
+//     DiscordProvider({
+//       clientId: process.env.DISCORD_CLIENT_ID,
+//       clientSecret: process.env.DISCORD_CLIENT_SECRET,
+//     })
+//   );
+// }
 
-if (process.env.GOOGLE_CLIENT_ID) {
+// if (process.env.GOOGLE_CLIENT_ID) {
+//   providers.push(
+//     GoogleProvider({
+//       clientId: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       authorization: {
+//         // NOTE: adding this will case the app to ask the user
+//         // to login everytime, might be a bit annoying
+//         params: {
+//           prompt: "consent",
+//           access_type: "offline",
+//           response_type: "code",
+//         },
+//       },
+//     })
+//   );
+// }
+
+if (process.env.KEYCLOAK_CLIENT_ID) {
   providers.push(
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    KeycloakProvider({
+      clientId: process.env.KEYCLOAK_CLIENT_ID,
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
+      issuer: process.env.KEYCLOAK_ISSUER,
       authorization: {
         // NOTE: adding this will case the app to ask the user
         // to login everytime, might be a bit annoying
@@ -106,9 +127,24 @@ const moderatorUserMap = process.env.MODERATOR_USERS.split(",").reduce((result, 
   return result;
 }, new Map());
 
+// Custom adapter after removing unwanted parameters.
+const prismaAdapter = PrismaAdapter(prisma);
+
+const MyAdapter: Adapter = {
+  ...prismaAdapter,
+  linkAccount: (account) => {
+    delete account["not-before-policy"];
+    delete account["refresh_expires_in"];
+    delete account["roles"];
+    console.log(account)
+    return prismaAdapter.linkAccount(account);
+  },
+};
+
 const authOptions: AuthOptions = {
   // Ensure we can store user data in a database.
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
+  adapter: MyAdapter,
   providers,
   session: {
     strategy: "jwt",

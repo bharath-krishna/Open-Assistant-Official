@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/react";
-import { Discord, Google } from "@icons-pack/react-simple-icons";
+import { Discord, Google, Rakuten } from "@icons-pack/react-simple-icons";
 import { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Bug, Mail } from "lucide-react";
 import { GetServerSideProps } from "next";
@@ -56,6 +56,7 @@ const errorMessages: Record<SignInErrorTypes, string> = {
 };
 
 const REDIRECT_AFTER_LOGIN = "/chat";
+const DASHBOARD_PATH = "/dashboard";
 
 interface SigninProps {
   providers: Record<BuiltInProviderType, ClientSafeProvider>;
@@ -65,7 +66,7 @@ function Signin({ providers }: SigninProps) {
   const router = useRouter();
   const { ENABLE_EMAIL_SIGNIN: enableEmailSignin, ENABLE_EMAIL_SIGNIN_CAPTCHA: enableEmailSigninCaptcha } =
     useBrowserConfig();
-  const { discord, email, google, credentials } = providers;
+  const { discord, email, google, keycloak, credentials } = providers;
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -90,11 +91,11 @@ function Signin({ providers }: SigninProps) {
       </Head>
       <AuthLayout>
         <Stack spacing="2">
-          {credentials && <DebugSigninForm providerId={credentials.id} />}
-          {email && enableEmailSignin && (
+          {/* {credentials && <DebugSigninForm providerId={credentials.id} />} */}
+          {/* {email && enableEmailSignin && (
             <EmailSignInForm providerId={email.id} enableEmailSigninCaptcha={enableEmailSigninCaptcha} />
-          )}
-          {discord && (
+          )} */}
+          {/* {discord && (
             <Button
               bg={buttonBgColor}
               _hover={{ bg: "#4A57E3" }}
@@ -106,8 +107,8 @@ function Signin({ providers }: SigninProps) {
             >
               Continue with Discord
             </Button>
-          )}
-          {google && (
+          )} */}
+          {/* {google && (
             <Button
               bg={buttonBgColor}
               _hover={{ bg: "#4A57E3" }}
@@ -118,6 +119,19 @@ function Signin({ providers }: SigninProps) {
               onClick={() => signIn(google.id, { callbackUrl: REDIRECT_AFTER_LOGIN })}
             >
               Continue with Google
+            </Button>
+          )} */}
+          {keycloak && (
+            <Button
+              bg={buttonBgColor}
+              _hover={{ bg: "#4A57E3" }}
+              _active={{ bg: "#454FBF" }}
+              size="lg"
+              color="white"
+              leftIcon={<Rakuten />}
+              onClick={() => signIn(keycloak.id, { callbackUrl: DASHBOARD_PATH })}
+            >
+              Continue with Keycloak
             </Button>
           )}
         </Stack>
